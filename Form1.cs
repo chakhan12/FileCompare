@@ -7,10 +7,49 @@ namespace FileCompare
             InitializeComponent();
         }
 
+        private void PopulateListView(ListView lv, string folderPath)
+        {
+            lv.BeginUpdate();
+            lv.Items.Clear();
+
+            try
+            {
+                // 📁 폴더 먼저
+                var dirs = Directory.EnumerateDirectories(folderPath)
+                    .Select(p => new DirectoryInfo(p))
+                    .OrderBy(d => d.Name);
+
+                foreach (var d in dirs)
+                {
+                    var item = new ListViewItem(d.Name);
+                    item.SubItems.Add("<DIR>");
+                    item.SubItems.Add(d.LastWriteTime.ToString("g"));
+                    lv.Items.Add(item);
+                }
+
+                // 📄 파일
+                var files = Directory.EnumerateFiles(folderPath)
+                    .Select(p => new FileInfo(p))
+                    .OrderBy(f => f.Name);
+
+                foreach (var f in files)
+                {
+                    var item = new ListViewItem(f.Name);
+                    item.SubItems.Add(f.Length.ToString("N0") + " 바이트");
+                    item.SubItems.Add(f.LastWriteTime.ToString("g"));
+                    lv.Items.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류: " + ex.Message);
+            }
+
+            lv.EndUpdate();
+        }
 
 
-
-
+       
         private void btnLeftDir_Click(object sender, EventArgs e)
         {
             using (var dlg = new FolderBrowserDialog())
@@ -25,9 +64,22 @@ namespace FileCompare
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     txtLeftDir.Text = dlg.SelectedPath;
+
+                  
+
+
+                }
+
+                {
+
+
+
+
+
                 }
             }
         }
+        
 
         private void btnRightDir_Click(object sender, EventArgs e)
         {
@@ -43,6 +95,11 @@ namespace FileCompare
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     txtRightDir.Text = dlg.SelectedPath;
+
+                    PopulateListView(lvwLeftDir, dlg.SelectedPath);
+
+
+
                 }
             }
         }
@@ -58,6 +115,11 @@ namespace FileCompare
         }
 
         private void txtLeftDir_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lvwLeftDir_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
