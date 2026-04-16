@@ -65,7 +65,7 @@ namespace FileCompare
                 {
                     txtLeftDir.Text = dlg.SelectedPath;
 
-                  
+                    PopulateListView(lvwLeftDir, dlg.SelectedPath);
 
 
                 }
